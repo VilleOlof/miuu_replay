@@ -4,23 +4,36 @@ A Rust crate to parse and read replay files from [`Marble It Up! Ultra`](https:/
 
 ## Usage
 
-- [ ] how to use
+```rust
+const replay_file = include_bytes!("dummy.replay");
 
+// Parse the basic replay data.
+let replay = miuu_replay::Replay::parse(&replay_file)?;
+println!("level: {}, player: {}", replay.data.level, replay.data.player);
 
-## File Structure
+// Decode the internal `replay_buffer`,  
+// This is where all the "visual" data is.  
+let mut replay_buffer = replay.decode_replay_buffer()?;
+let marble = replay_buffer.get_marble()?;
+let positions = marble.position()?;
+```
 
-- [ ] explain how replay files are stored and decoded.  
+## File format
 
-# TODO
-- [ ] Fix so `RewindCurveFitter` and `RewindCurveFitterArray` can actually be used and their data exposed
-- [ ] Fix public API functions, `parse_replay` (just MessagePack), `decode_data` (actual replayBuffer data)
-- [ ] Fix error handling and remove like all `.unwrap()`  
-- [ ] Give some note that `RewindCurve::read_from` uses heavily unsafe ptr casting to `T`  
-- [ ] Verify that the data is actually real *(map out a replays position vector3's into a 3d space and see if it looks right)*
-- [ ] More tests
-- [ ] Benchmark the throughput on how many replays can be parsed and fully decoded per `/s`
-- [ ] Improve `Vector2`, `Vector3` & `Quaternion` with QoL trait impls and functions
-- [ ] Improve `CircularBuffer` with similar QoL and on parity with all of the functions it has in the games code
-
-test command to process data  
-`cargo test -- --nocapture | Out-File log.txt`
+First the file is serialized with [`MessagePack`](https://msgpack.org/).  
+This extracts the most surface level details about a replay file.  
+Stuff like: `version`, `updatedAt`, `level`, `player`, `score` and cosmetics.  
+Then within this data there is a field called `replayBuffer`.  
+This field holds all of the positional, timestamped and moving data.  
+All of this data is compressed with DEFLATE,  
+then after this data is serialized with [C# BinaryWriter](https://learn.microsoft.com/en-us/dotnet/api/system.io.binarywriter).  
+So we can copy how the game uses the binary writer internally and  
+read the same amounts of bytes and interpret those bytes in the same way.  
+This allows us to get the more complicated data like `RewindCurveFitter<Vector3>`,  
+for all positions in a replay. Those final data points is stored inside  
+ring buffers with an identical ring buffer in size that stores the time the data  
+occured from the start of the replay.  
+I recommend looking at  
+`src/rewind_curve_fitter.rs`, `src/rewind_curve_type.rs`,  
+`src/rewind_curve.rs` and `src/rewindable.rs`  
+for how those are structured

@@ -1,4 +1,4 @@
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct CircularBuffer<T: Clone> {
     buffer: Vec<Option<T>>,
     start: usize,
@@ -121,5 +121,40 @@ impl<T: Clone> CircularBuffer<T> {
             self.buffer[self.start] = Some(value);
             self.size += 1;
         }
+    }
+
+    pub fn pop_back(&mut self) -> Option<T> {
+        self.end = self.decrement(self.end);
+        let value = std::mem::take(&mut self.buffer[self.end]);
+        self.size -= 1;
+
+        value
+    }
+
+    pub fn pop_front(&mut self) -> Option<T> {
+        let value = std::mem::take(&mut self.buffer[self.start]);
+        self.start = self.increment(self.start);
+        self.size -= 1;
+
+        value
+    }
+
+    pub fn clear(&mut self) {
+        self.start = 0;
+        self.end = 0;
+        self.size = 0;
+        self.buffer.clear();
+    }
+
+    pub fn start(&self) -> usize {
+        self.start
+    }
+
+    pub fn end(&self) -> usize {
+        self.end
+    }
+
+    pub fn buffer(&self) -> &Vec<Option<T>> {
+        &self.buffer
     }
 }
