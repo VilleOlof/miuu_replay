@@ -3,7 +3,7 @@ use crate::{RewindCurveFitter, Rewindable, field};
 /// A wrapper type for [`Rewindable`] that comes from [`ReplayBuffer::get_elevators`](crate::ReplayBuffer::get_elevators).  
 #[derive(Debug, Clone)]
 pub struct Elevator {
-    pub(crate) inner: Rewindable,
+    pub inner: Rewindable,
 }
 
 impl Elevator {

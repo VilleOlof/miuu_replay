@@ -237,7 +237,7 @@ dependencies = [
 
 [[package]]
 name = "miuu_replay"
-version = "0.1.0"
+version = "0.1.1"
 dependencies = [
  "criterion",
  "csharp_binary_encoding",

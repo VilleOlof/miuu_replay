@@ -7,7 +7,7 @@ use crate::{Quaternion, RewindCurveFitter, RewindCurveFitterArray, Rewindable, V
 /// This type ensures that it is in fact a `MarbleController` & exposes some *QoL* functions related to the marble
 #[derive(Debug, Clone)]
 pub struct Marble {
-    pub(crate) inner: Rewindable,
+    pub inner: Rewindable,
 }
 
 impl Marble {

@@ -1,7 +1,7 @@
 [package]
 name = "miuu_replay"
 description = "Parse .replay files from the game Marble It Up! Ultra"
-version = "0.1.0"
+version = "0.1.1"
 edition = "2024"
 license = "MIT"
 authors = ["VilleOlof"]
